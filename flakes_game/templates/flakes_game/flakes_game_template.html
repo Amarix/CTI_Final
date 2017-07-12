@@ -16,7 +16,7 @@
             ctx.strokeStyle="rgba(0,200,0,1)";
             ctx.stroke();
         }
-
+// functions for the basic math involved in each equation
         function linear(){
             // 2x - 4 = 10 : x=7
             // 5x - 6 = 3x - 8 :x=-1
@@ -49,7 +49,7 @@
 
     </script>
 </head>
-<menu type="context" id="mainmenu">
+<menu id="mainmenu">
     <menuitem label="home" onclick="window.location.reload();location.href='/'">
         Home
     </menuitem>
@@ -61,12 +61,25 @@
     </menuitem>
 </menu>
 <body>
-    <label id="eqA" type="text">test</label>
+    <label id="eqA" type="text">formula</label>
     <canvas id="turtleCanvas" width="400" height="300">
 
     </canvas>
     <label id="ans" type="text">answer</label>
 <script>
+    // function to determine the difficulty level telling the program which equation function to call
+    window.difficulty(1);
+    function difficulty(){
+        var d = arguments[0];
+        console.log(d.toString());
+        console.log('ran difficult function');
+        if (d == 1){
+            easy();
+        }
+
+    }
+    // easy function will call the linear equation as it has a simple one-variable answer
+    function easy() {
         var currentValues = window.linear();
         var eqsn = currentValues.equationStr;
         console.log(eqsn);
@@ -74,6 +87,7 @@
         console.log(ans);
         document.getElementById('eqA').innerHTML = eqsn;
         document.getElementById('ans').innerHTML = ans;
+    }
     </script>
 </body>
 <footer>
