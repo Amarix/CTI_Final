@@ -1,0 +1,30 @@
+<style>
+    body { margin: 0; padding: 0; background: #666; color: #000; font: 15px Helvetica; }
+	p { margin-left: 10px; }
+	a { color: #006; }
+</style>
+<head>
+	<h1> This is the flakes game page </h1>
+</head>
+<menu type="context" id="mainmenu">
+    <menuitem label="home" onclick="window.location.reload();location.href='/'">
+        Home
+    </menuitem>
+    <menuitem label="flakes_game" onclick="window.location.reload();location.href='/flakes/'">
+        Flakes
+    </menuitem>
+    <menuitem label="formulas" onclick="window.location.reload();location.href='/formulas/'">
+        Formulas
+    </menuitem>
+</menu>
+<body>
+<!-- including the lib and an rgb to hsv color util function -->
+<script src="hsv.js"></script>
+<script src="pen.js"></script>
+<canvas id="mycanvas" height="500" width="800">
+
+</canvas>
+
+</body>
+<footer>
+</footer>
