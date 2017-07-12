@@ -17,6 +17,7 @@
     <orderEntry type="library" name="jquery" level="application" />
     <orderEntry type="library" name="skulpt" level="application" />
     <orderEntry type="library" name="skulpt-stdlib" level="application" />
+    <orderEntry type="library" name="jquery-1.6.4.min.js" level="project" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
