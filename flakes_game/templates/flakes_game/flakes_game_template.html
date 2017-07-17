@@ -1,53 +1,18 @@
-
+{% load static from staticfiles %}
+{% block scripts %}
 <style>
+    #canvasSize{
+        position: relative;
+        overflow: auto;
+        max-height: 50%;
+        max-width: 100%;
+    }
 </style>
+<title>
+Flakes Game
+</title>
 <head>
 	<h1> This is the flakes game page </h1>
-    <script type="application/javascript" language="javascript">
-        window.onload = draw; // execute draw function
-        function draw(){
-            var canvas = document.getElementById('turtleCanvas');
-            var ctx = canvas.getContext('2d');
-
-            ctx.beginPath();
-            ctx.moveTo(0,0);
-            ctx.lineTo(20, 20);
-            ctx.lineTo(80, 80);
-            ctx.strokeStyle="rgba(0,200,0,1)";
-            ctx.stroke();
-        }
-// functions for the basic math involved in each equation
-        function linear(){
-            // 2x - 4 = 10 : x=7
-            // 5x - 6 = 3x - 8 :x=-1
-            var x = randNum();
-            var a = randNum();
-            var b = randNum();
-            var c = ((a*x)-b);
-
-            equation = (a.toString()+"x-"+b.toString()+"="+c.toString());
-            return {
-                equationStr: equation,
-                answer: x.toString()
-            };
-
-        }
-
-        function biquadratic(){
-            // x^4 - 5x^2 + 4 = 0 : x=2, x=-2, x=1, x=-1
-
-        }
-
-        function polynomial(){
-            // -4x^3 + 6x^2 + 2x = 0 : x=0, x=(3+/-sqr(17))/4
-        }
-
-        function randNum(){
-            var x = Math.floor((Math.random()*100)+1);
-            return x;
-        }
-
-    </script>
 </head>
 <menu id="mainmenu">
     <menuitem label="home" onclick="window.location.reload();location.href='/'">
@@ -61,34 +26,209 @@
     </menuitem>
 </menu>
 <body>
-    <label id="eqA" type="text">formula</label>
-    <canvas id="turtleCanvas" width="400" height="300">
+<label id="eqA" type="text">formula</label>
+    <div id="canvasSize">
+        <canvas id="turtleCanvas" width="500" height="500"></canvas>
+    </div>
+    <label id="ans" type="text">answer</label><br>
+    <!-- the input space for the users answer and the button to submit it -->
+    <input type="number" id="userAnswer">
+    <button id="answerBtn" onclick="getUserAnswer()">Click</button>
+    <button id="nxtB" onclick="nxtQ()">Next</button>
+    <label type="text" id="answerOutput">answer output</label>
 
-    </canvas>
-    <label id="ans" type="text">answer</label>
-<script>
+ <script type="application/javascript" language="javascript">
+     var nxtBtn = document.getElementById('nxtB');
+     nxtBtn.disabled = true;
+     var canvas = document.getElementById('turtleCanvas');
+     var ctx = canvas.getContext('2d');
+     var A;
+     var B;
+     var C;
+     var X;
+     var boolAns = null;
+        function draw(varOne, varTwo, varThree){
+            console.log(varOne, varTwo, varThree);
+            var i = 2*Math.PI;
+            var vOne = varOne*10+varThree;
+            var vTwo = varTwo*10+varThree;
+            ctx.beginPath();
+            ctx.arc(vTwo, vOne, varThree, 0, i);
+            while (varThree > 0) {
+                ctx.arc(vTwo, vOne, varThree, 0, i);
+                varThree -= 5;
+            }
+            if (boolAns == true){
+                ctx.strokeStyle = "#193";
+            }else if(boolAns == false){
+                ctx.strokeStyle = "#931";
+            }else{
+                ctx.strokeStyle = "#000";
+            }
+            ctx.stroke();
+        }
+        //function to clear canvas
+        function clrCanv(){
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        // functions for the basic math involved in each equation
+        function linear(){
+            //examples: 2x - 4 = 10 : x=7
+            // 5x - 6 = 3x - 8 :x=-1
+            randNum();
+            C = ((A*X)-B);
+            draw(A, B, X); // execute draw function
+            var values = {'x':X,'a':A,'b':B,'c':C};
+            equation = (A.toString()+"x-"+B.toString()+"="+C.toString());
+            return {
+                equationStr: equation,
+                answer: X.toString(),
+                Values: values
+            };
+
+        }
+        function exponential(){
+            //example: 2^x + 2^(x+2) + 2^(x+4) = 168 : x = 3
+            c = 50000000;
+            while (Boolean(c > 2000)){
+                randNum();
+                var partA = (Math.pow(A, X));
+                var firstExp = (X+A);
+                var partB = (Math.pow(A, firstExp));
+                var varX2 = (A*B);
+                var secondExp = (X+varX2);
+                var partC = (Math.pow(A, secondExp));
+                C = partA + partB + partC;
+            }
+            draw(A, B, X); // execute draw function
+            var values = {'x':x,'a':a,'b':b,'c':c};
+            equation = (A.toString() + "^(x) +" + A.toString() + "^(x+" + A.toString() + ") +" + A.toString() + "^(x+" + varX2.toString() + ") = " + C.toString());
+            return {
+                equationStr: equation,
+                answer: X,
+                Values:values
+                };
+        }
+        function polynomial(){
+            // -4x^3 + 6x^2 + 2x = 0 : x=0, x=(3+/-sqr(17))/4
+        }
+        // provides a random number for each variable in each equation
+        function randNum(){
+            A = Math.abs(Math.floor((Math.random()*30)))+2;
+            B = Math.abs(Math.floor((Math.random()*30)));
+            X = Math.abs(Math.floor((Math.random()*30)))+1;
+        }
+
+    // this section deals with The user input and checking the user answer
+    var numAns = 0;
+    var ans = -1;
+    var score = 0;
+    var currentValues;
+    var ezQsn;
+    var a;
+    var b;
+    var c;
+    var x;
+    var pointValue = 1;
+    var problemNum = 1;
+    easy();
+    // function to obtain and check users answer
+    function getUserAnswer(){
+        ans = parseInt(document.getElementById('userAnswer').value);
+        document.getElementById('answerOutput').innerHTML = ans.toString();
+        if (ans == x){
+            rightAns();
+        }else{
+            wrongAns();
+        }
+
+    }
+    // for a correct answer the number of times the user has answered the new question becomes
+    // zero and their score goes up. The number of problems seen has also risen because there
+    // will be a limit of 10 problems.
+    function rightAns() {
+        boolAns = true;
+        draw(a, b, ans);
+        score = score + pointValue;
+        nxtBtn.disabled = false;
+    }
+    // function to test how many times the user has answered the same question. Is called each time
+    // the user answers the the same question incorrectly. The user will have up to three tries to
+    // answer each question. Each time the answer is wrong their score drops which is what determines
+    // the difficulty level of the problem. If the user has answered the question incorrectly three times
+    // it goes to the next problem and so the number of problems is increased.
+    function wrongAns(){
+        if (numAns < 2){
+            boolAns = false;
+            numAns++;
+            draw(a, b, ans);
+        }else{
+            score--;
+            nxtBtn.disabled = false;
+        }
+    }
+    function nxtQ(){
+        boolAns = null;
+        clrCanv();
+        numAns = 0;
+        problemNum++;
+        difficulty(score);
+    }
     // function to determine the difficulty level telling the program which equation function to call
-    window.difficulty(1);
     function difficulty(){
+        nxtBtn.disabled = true;
         var d = arguments[0];
-        console.log(d.toString());
-        console.log('ran difficult function');
-        if (d == 1){
+        if (d >= 500){
+            console.log("running hard");
+            pointValue = 3;
+            hard();
+        }
+        else if (d >= 3){
+            console.log("running normal");
+            pointValue = 2;
+            normal();
+        }
+        else{
+            console.log("running easy");
+            pointValue = 1;
             easy();
         }
 
     }
-    // easy function will call the linear equation as it has a simple one-variable answer
+    // the easy function will call the linear equation function
     function easy() {
-        var currentValues = window.linear();
-        var eqsn = currentValues.equationStr;
-        console.log(eqsn);
-        var ans = currentValues.answer;
-        console.log(ans);
-        document.getElementById('eqA').innerHTML = eqsn;
-        document.getElementById('ans').innerHTML = ans;
+        currentValues = linear();
+        ezQsn = currentValues.equationStr;
+        x = parseInt(currentValues.answer);
+        a = parseInt(currentValues.Values.a);
+        b = parseInt(currentValues.Values.b);
+        c = parseInt(currentValues.Values.c);
+        displayEqzn(ezQsn, x);
+
+
     }
-    </script>
+    // the normal function will call the exponential equation function
+    function normal(){
+        currentValues = exponential();
+        ezQsn = currentValues.equationStr;
+        x = parseInt(currentValues.answer);
+        a = parseInt(currentValues.Values.a);
+        b = parseInt(currentValues.Values.b);
+        c = parseInt(currentValues.Values.c);
+        displayEqzn(ezQsn, x);
+
+    }
+    // hard function will call the... ?
+    function hard(){
+
+    }
+    // displays new equation
+    function displayEqzn(eqsn, x){
+        document.getElementById('eqA').innerHTML = eqsn;
+        document.getElementById('ans').innerHTML = x;
+    }
+</script>
 </body>
 <footer>
 </footer>
+{% endblock %}
