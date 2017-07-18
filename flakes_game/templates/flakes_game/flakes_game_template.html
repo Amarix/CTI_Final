@@ -1,6 +1,11 @@
 {% load static from staticfiles %}
 {% block scripts %}
 <style>
+    body{
+        background-color: black;
+        color: gray;
+        text-align: center;
+    }
     #canvasSize{
         position: relative;
         overflow: auto;
@@ -35,7 +40,7 @@ Flakes Game
     <input type="number" id="userAnswer">
     <button id="answerBtn" onclick="getUserAnswer()">Click</button>
     <button id="nxtB" onclick="nxtQ()">Next</button>
-    <label type="text" id="answerOutput">answer output</label>
+    <label type="text" id="scoreOutput">score</label>
 
  <script type="application/javascript" language="javascript">
      var nxtBtn = document.getElementById('nxtB');
@@ -63,7 +68,7 @@ Flakes Game
             }else if(boolAns == false){
                 ctx.strokeStyle = "#931";
             }else{
-                ctx.strokeStyle = "#000";
+                ctx.strokeStyle = "#999";
             }
             ctx.stroke();
         }
@@ -135,7 +140,7 @@ Flakes Game
     // function to obtain and check users answer
     function getUserAnswer(){
         ans = parseInt(document.getElementById('userAnswer').value);
-        document.getElementById('answerOutput').innerHTML = ans.toString();
+        document.getElementById('scoreOutput').innerHTML = score.toString();
         if (ans == x){
             rightAns();
         }else{
@@ -147,10 +152,12 @@ Flakes Game
     // zero and their score goes up. The number of problems seen has also risen because there
     // will be a limit of 10 problems.
     function rightAns() {
+        document.getElementById('userAnswer').value = '';
+        nxtBtn.disabled = false;
+        answerBtn.disabled = true;
         boolAns = true;
         draw(a, b, ans);
         score = score + pointValue;
-        nxtBtn.disabled = false;
     }
     // function to test how many times the user has answered the same question. Is called each time
     // the user answers the the same question incorrectly. The user will have up to three tries to
@@ -158,6 +165,7 @@ Flakes Game
     // the difficulty level of the problem. If the user has answered the question incorrectly three times
     // it goes to the next problem and so the number of problems is increased.
     function wrongAns(){
+        document.getElementById('userAnswer').value = '';
         if (numAns < 2){
             boolAns = false;
             numAns++;
@@ -165,6 +173,7 @@ Flakes Game
         }else{
             score--;
             nxtBtn.disabled = false;
+            answerBtn.disabled = true;
         }
     }
     function nxtQ(){
@@ -176,20 +185,18 @@ Flakes Game
     }
     // function to determine the difficulty level telling the program which equation function to call
     function difficulty(){
+        answerBtn.disabled = false;
         nxtBtn.disabled = true;
         var d = arguments[0];
         if (d >= 500){
-            console.log("running hard");
             pointValue = 3;
             hard();
         }
         else if (d >= 3){
-            console.log("running normal");
             pointValue = 2;
             normal();
         }
         else{
-            console.log("running easy");
             pointValue = 1;
             easy();
         }
